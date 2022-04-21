@@ -1,4 +1,4 @@
-import { Checkbox, TextField } from '@material-ui/core';
+import { CheckboxWithLabel, TextField } from 'formik-mui';
 import { Field, Form, Formik } from 'formik';
 
 import DateFnsUtils from '@date-io/date-fns';
@@ -31,26 +31,42 @@ const Forms = () => {
                     console.log(values);
                 }}
             >
-                <LocalizationProvider dateAdapter={DateFnsUtils}>
-                    <Form>
-                        <Field
-                            name='pricing'
-                            label='Pricing'
-                            component={TextField}
-                            variant='outlined'
-                            margin='normal'
-                            fullWidth
-                        />
-                        <Field
-                            name='activationDate'
-                            label='ActivationDate'
-                            component={DatePicker}
-                        />
-                        <Field name='isActive' label='Is Active' type='checkbox' as={Checkbox} />
-
-                        <button type='submit'>Submit</button>
-                    </Form>
-                </LocalizationProvider>
+                {({ values, setFieldValue }) => (
+                    <LocalizationProvider dateAdapter={DateFnsUtils}>
+                        <Form>
+                            <Field
+                                name='pricing'
+                                label='Pricing'
+                                component={TextField}
+                                type='pricing'
+                            />
+                            <Field name='name' label='Name' component={TextField} type='name' />
+                            <Field
+                                name='activationDate'
+                                label='Activation Date'
+                                component={DatePicker}
+                                type='activationDate'
+                            />
+                            <Field
+                                name='deactivationDate'
+                                label='Deactivation Date'
+                                component={DatePicker}
+                                type='deactivationDate'
+                                disabled={values.isActive}
+                            />
+                            <Field
+                                name='isActive'
+                                Label={{ label: 'Is Active' }}
+                                component={CheckboxWithLabel}
+                                type='checkbox'
+                                onChange={() => {
+                                    setFieldValue('deactivationDate', null);
+                                    setFieldValue('isActive', !values.isActive);
+                                }}
+                            />
+                        </Form>
+                    </LocalizationProvider>
+                )}
             </Formik>
         </FormContainer>
     );
