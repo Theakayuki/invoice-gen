@@ -1,3 +1,5 @@
+import * as Yup from 'yup';
+
 import { CheckboxWithLabel, TextField } from 'formik-mui';
 import { Field, FieldArray, Form, Formik } from 'formik';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -25,6 +27,21 @@ const FormContainer = styled.div`
     }
 `;
 
+const formSchema = Yup.object().shape({
+    pricing: Yup.string().required('Required').min(2, 'Too Short!').max(50, 'Too Long!'),
+    name: Yup.string().required('Required').min(2, 'Too Short!').max(50, 'Too Long!'),
+    usersInfo: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string().required('Required'),
+            activationDate: Yup.date().required('Required'),
+            deactivationDate: Yup.date().default(null),
+            isActive: Yup.boolean().optional(),
+        }),
+    ),
+});
+
+//create custom DatePicker component
+
 const Forms = () => {
     const theme = createTheme({});
     return (
@@ -36,7 +53,9 @@ const Forms = () => {
                     usersInfo: [
                         { name: '', activationDate: null, deactivationDate: null, isActive: false },
                     ],
+                    testDate: null,
                 }}
+                validationSchema={formSchema}
                 onSubmit={(values) => {
                     console.log(values);
                 }}
@@ -55,7 +74,6 @@ const Forms = () => {
                                         size='small'
                                     />
                                 </div>
-                                {/* <Field name='name' label='Name' component={TextField} type='name' /> */}
                                 <br />
                                 <FieldArray
                                     name='usersInfo'
@@ -68,7 +86,6 @@ const Forms = () => {
                                                         label={`User ${index + 1}`}
                                                         component={TextField}
                                                         type='name'
-                                                        variant='filled'
                                                     />
                                                     <br />
                                                     <Field
@@ -76,16 +93,12 @@ const Forms = () => {
                                                         label='Activation Date'
                                                         component={DatePicker}
                                                         type='activationDate'
-                                                        variant='filled'
-                                                        size='small'
                                                     />
                                                     <Field
                                                         name={`usersInfo.${index}.deactivationDate`}
                                                         label='Deactivation Date'
                                                         component={DatePicker}
                                                         type='deactivationDate'
-                                                        variant='filled'
-                                                        size='small'
                                                     />
                                                     <br />
                                                     <Field
@@ -115,6 +128,7 @@ const Forms = () => {
                                                     </button>
                                                 </div>
                                             ))}
+
                                             <button
                                                 type='button'
                                                 onClick={() =>
@@ -131,32 +145,6 @@ const Forms = () => {
                                         </div>
                                     )}
                                 />
-                                {/* 
-                                <Field
-                                    name='activationDate'
-                                    label='Activation Date'
-                                    component={DatePicker}
-                                    type='activationDate'
-                                    clearable
-                                />
-                                <Field
-                                    name='deactivationDate'
-                                    label='Deactivation Date'
-                                    component={DatePicker}
-                                    type='deactivationDate'
-                                    disabled={values.isActive}
-                                    clearable
-                                />
-                                <Field
-                                    name='isActive'
-                                    Label={{ label: 'Is Active' }}
-                                    component={CheckboxWithLabel}
-                                    type='checkbox'
-                                    onChange={() => {
-                                        setFieldValue('deactivationDate', null);
-                                        setFieldValue('isActive', !values.isActive);
-                                    }}
-                                /> */}
                             </Form>
                         </LocalizationProvider>
                     </ThemeProvider>
